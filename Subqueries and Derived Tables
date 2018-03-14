@@ -1,0 +1,46 @@
+SELECT *
+FROM exam_answers
+WHERE test_name = 'Yawn Warm-up' AND TIMESTAMPDIFF(minute,start_time,end_time)>
+(SELECT AVG(TIMESTAMPDIFF(minute,start_time,end_time))
+    FROM exam_answers
+    WHERE test_name = "Yawn Warm-Up" AND TIMESTAMPDIFF(minute,start_time,end_time)>0);
+
+How could you determine the number of unique users in the users table who were NOT in the dogs table using a NOT EXISTS clause? 
+
+SELECT COUNT(DISTINCT u.user_guid) AS Users_User_ID
+FROM users u
+WHERE NOT EXISTS (SELECT * 
+                 FROM dogs d
+                 WHERE u.user_guid = d.user_guid);
+
+Combine the Users table with the Dogs table on ONLY distinct user IDs:
+
+SELECT DistinctUUsersID.user_guid AS uUserID, d.user_guid AS dUserID, count(*) AS numrows
+FROM (SELECT DISTINCT u.user_guid 
+      FROM users u) AS DistinctUUsersID 
+LEFT JOIN dogs d
+   ON DistinctUUsersID.user_guid=d.user_guid
+GROUP BY DistinctUUsersID.user_guid
+ORDER BY numrows DESC;
+
+Use and IN clause and equijoin syntax that outputs the dog_guid, breed group, state of the owner, and zip of the owner for each distinct dog in the Working, Sporting, and Herding breed groups.
+
+SELECT Distinct d.dog_guid, d.breed_group, u.state, u.zip
+FROM dogs d, users u
+WHERE d.breed_group IN ('Working','Sporting','Herding') AND d.user_guid = u.user_guid;
+
+Use traditional join syntax and an IN clause to output the dog_guid, breed group, state of the owner, and zip of the owner for each distinct dog in the Working, Sporting, and Herding breed groups.
+
+SELECT DISTINCT(d.dog_guid), d.breed_group, u.state, u.zip 
+FROM dogs d
+JOIN users u ON d.user_guid = u.user_guid
+WHERE d.breed_group IN ('Working','Sporting','Herding');
+
+Use a NOT EXISTS clause to select all the users in the dogs table that are not in the users table
+
+SELECT d.user_guid, d.dog_guid
+FROM dogs d
+WHERE NOT EXISTS (SELECT u.user_guid 
+                 FROM users u
+                 WHERE d.user_guid = u.user_guid);
+
