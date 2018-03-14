@@ -1,0 +1,108 @@
+Write an IF statement that returns the number of users who reside in the US and outside the US
+
+SELECT IF(grouped_users.country='US','In US','Outside US') AS Country_of_Residence, count(grouped_users.user_guid) AS num_guids
+    FROM (SELECT DISTINCT user_guid, country
+    FROM users
+    WHERE user_guid IS NOT NULL AND country IS NOT NULL) AS grouped_users
+GROUP BY Country_of_Residence;
+
+Write an IF statement that accounts for user IDs in an ‘N/A’ country group:
+
+SELECT IF(grouped_users.country='US','US', if(grouped_users.country ='N/A','N/A','Outside US')) AS user_location, count(grouped_users.user_guid) AS num_guids
+    FROM (SELECT DISTINCT user_guid, country
+    FROM users
+    WHERE user_guid IS NOT NULL AND country IS NOT NULL) AS grouped_users
+GROUP BY user_location;
+
+Use a CASE statement instead of a nested if to get the same results:  
+
+SELECT CASE WHEN grouped_users.country = 'US' THEN 'US'
+            WHEN grouped_users.country = 'N/A' THEN 'N/A'
+            ELSE 'Outside US'
+            END AS User_location, 
+        count(grouped_users.user_guid)
+    FROM (select distinct user_guid, country
+         FROM users
+         WHERE user_guid is not null AND country is not null) AS grouped_users
+    GROUP BY User_location;
+
+OR this one:
+
+SELECT CASE grouped_users.country 
+    WHEN  'US' then 'US'
+    WHEN 'N/A' then 'N/A'
+    ELSE 'Not US'
+    END AS User_Location, count(grouped_users.user_guid)
+FROM (SELECT distinct user_guid, country
+     FROM users
+     WHERE user_guid is not null AND country is not null) AS grouped_users
+GROUP BY User_location;
+
+Use a CASE statement to show which dogs have been neutered and which dogs haven’t been neutered.  Be sure to account for values other than neutered and not neutered, as well.  
+
+SELECT dog_guid, dog_fixed, 
+      CASE dog_fixed 
+        WHEN '1' then 'neutered'
+        WHEN '0' then 'not neutered'
+        END
+        AS Neutered_or_Not
+        FROM dogs
+        ORDER BY Neutered_or_not
+        LIMIT 45;
+
+Use a CASE statement that outputs 3 columns: dog_guid, exclude, and a third column that reads "exclude" every time there is a 1 in the "exclude" column of dogs and "keep" every time there is any other value in the exclude column. 
+
+SELECT dog_guid, exclude,
+CASE exclude
+WHEN '1' THEN 'exclude'
+ELSE 'keep'
+END AS exclude_cleaned
+FROM dogs
+LIMIT 10;
+
+Use an IF statement to output dog ID, exclude, and a third column that reads “exclude” when there is a 1 in the exclude column, and “keep” when there is a value of something else in the column
+
+SELECT dog_guid, exclude, IF(exclude="1","exclude","keep") AS cleaned_excluded 
+FROM dogs 
+LIMIT 10;
+
+Write a CASE expression that displays dog ID and weight, with another column that breaks weight into different classifications of: 0 – 10 pounds, between 10 and 30 pounds, between 30 and 50 pounds, between 50 and 85 pounds, and greater than 85 pounds. 
+
+SELECT dog_guid, weight, 
+CASE 
+WHEN weight >=1 AND weight <=10 THEN 'very small'
+WHEN weight > 10 AND weight <=30 THEN 'small'
+WHEN weight > 30 AND weight <=50 THEN 'medium'
+WHEN weight >50 AND weight <=85 THEN 'big'
+WHEN weight >85 THEN 'very big'
+END as weight_classification
+FROM dogs
+LIMIT 50;
+
+For each dog, output its dog ID, breed type, and number of tests created.  For breed type should be labeled as ‘Pure Breed’ if the dog is a pure breed, and ‘Not pure breed’ if the dog is anything else. 
+
+SELECT d.dog_guid, d.breed_type, count(c.created_at) AS Number_of_tests,
+IF (d.breed_type = 'Pure Breed','Pure_Breed','Not_pure_breed') AS pure_breed
+FROM dogs d, complete_tests c
+WHERE d.dog_guid = c.dog_guid
+GROUP BY dog_guid, breed_type, pure_breed
+LIMIT 50;
+
+Use a CASE statement to output the number of users who live in the United States displayed as user_guid and specific groups of states.  New York and New Jersey in Group 1, North Carolina or South Carolina in Group 2, California in Group 3, and everything else in Group 4. 
+
+SELECT COUNT(DISTINCT user_guid),
+CASE
+WHEN state='NY' OR state='NJ' THEN 'Group 1'
+WHEN state='NC' OR state='SC' THEN 'Group 2'
+WHEN state = 'CA' THEN 'Group 3'
+ELSE 'Group 4'
+END AS state_group 
+FROM users
+WHERE country = 'US' AND state is not null
+GROUP by state_group;
+
+How many dogs are dna tested and have the personality dimension of either stargazer or socialite? 
+
+SELECT COUNT(DISTINCT dog_guid)
+FROM dogs
+WHERE dna_tested = '1' AND (Dimension = 'stargazer' OR dimension = 'socialite');
