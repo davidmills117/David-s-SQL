@@ -58,7 +58,6 @@ where guestcost >= 10;
 
 12.	Produce a list of the total number of slots booked per facility in the month of September 2012. Produce an output table consisting of facility id and slots, sorted by the number of slots.
 
-
 select facid, sum(slots) as totalslotsinSeptember2012 from cd.bookings 
 where starttime between '09-01-2012' and '09-30-2012'
 group by facid
@@ -80,8 +79,5 @@ inner join cd.bookings on facilities.facid = bookings.facid
 where facilities.facid in (0,1) and bookings.starttime >= '2012-09-21' and bookings.starttime < '2012-09-22' 
 order by bookings.starttime;
 
-selecting the columns to be returned, and then specifying a table name (does it matter which table is selected to be the main table? Are they interchangeable?)
-then joining the two tables by their common column, in this case facid
-then applying filters and ordering, in this case saying to return the facility IDs that correspond to tennis courts, and start times that are only on 09-21
-then ordering by start time
+
 
