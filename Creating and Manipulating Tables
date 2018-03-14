@@ -1,0 +1,44 @@
+create table Account(
+    user_id serial Primary key,
+    user_name VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(50) NOT NULL,
+    email VARCHAR(335) UNIQUE NOT NULL,
+    created_on TIMESTAMP NOT NULL,
+    Last_login TIMESTAMP);
+
+create table Leads(
+Customer_ID serial Primary Key,
+first_name VARCHAR(50) NOT NULL,
+last_name Varchar(50) NOT NULL,
+email VARCHAR(50) UNIQUE NOT NULL,
+sign_up_date timestamp NOT Null,
+Number_of_minutes_spent integer NOT NULL);
+
+DROP TABLE 
+if exists] table_name
+
+
+*to insert data into a table:
+insert into link(url,name)
+values 
+('www.google.com','Google');
+*link is table name, url and name are column names, values 
+
+*to update information in a table
+update link 
+set description = 'Name starts with an A'
+where name like 'A%'
+returning name,Id,etc.
+*link is table name, description is column name, name is column name. Returning means to return the specified columns in the newly updated table in order to see / verify that the table has been updated.  Returning isn’t necessary to update table only.
+
+delete from link
+where name = 'A' 
+returning *;
+*  to delete a table
+drop table if exists link;
+
+alter table link DROP COLUMN active;
+
+ALTER TABLE link RENAME COLUMN title TO new_title_name;
+
+ALTER TABLE link RENAME TO url_table;
