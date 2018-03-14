@@ -42,3 +42,25 @@ alter table link DROP COLUMN active;
 ALTER TABLE link RENAME COLUMN title TO new_title_name;
 
 ALTER TABLE link RENAME TO url_table;
+
+create table teachers (
+teacher_id serial primary key,
+first_name varchar(20),
+last_name varchar(20),
+homeroom_number integer,
+department varchar(20),
+email varchar (50) unique,
+phone varchar (10) unique);
+
+insert into teachers (teacher_id,first_name,last_name,homeroom_number,department,email,phone)
+values ('1','Jonas','Salk','5','Biology','jsalk@school.org','777554321');
+
+create view customer_info AS
+select first_name,last_name,email,address,phone
+from customer
+join address
+on customer.address_id = address.address_id;
+
+ALTER VIEW customer_info
+RENAME TO customer_details;
+
