@@ -1,0 +1,136 @@
+What was the highest original price in the Dillard’s database of the item with SKU 3631365?
+
+SELECT max(orgprice)
+FROM trnsact
+WHERE sku = '3631365';
+
+What is the color of the Liz Claiborne brand item with the highest SKU # in the Dillard’s database (the Liz Claiborne brand is abbreviated “LIZ CLAI” in the Dillard’s database)?
+
+SELECT color, brand, sku
+FROM skuinfo
+WHERE brand = 'LIZ CLAI'
+ORDER BY sku desc;
+
+What is the sku number of the item in the Dillard’s database that had the highest original sales price?
+
+SELECT TOP 10 sku, orgprice
+FROM trnsact
+ORDER BY orgprice desc;
+
+According to the strinfo table, in how many states within the United States are Dillard’s stores located? (HINT: the bottom of the SQL scratchpad reports the number of rows in your output)
+
+SELECT DISTINCT(state)
+FROM strinfo;
+
+How many Dillard’s departments start with the letter “e”
+
+SELECT count(deptdesc)
+FROM deptinfo
+WHERE deptdesc like 'e%';
+
+What was the date of the earliest sale in the database where the sale price of the item did not equal the original price of the item, and what was the largest margin (original price minus sale price) of an item sold on that earliest date?
+
+SELECT TOP 10 saledate, (orgprice - sprice) AS margin
+FROM trnsact
+WHERE orgprice <> sprice AND saledate = '2004-08-01'
+ORDER BY saledate asc, margin desc;
+What register number made the sale with the highest original price and highest sale price between the dates of August 1, 2004 and August 10, 2004? Make sure to sort by original price first and sale price second.
+
+SELECT register, orgprice, sprice
+FROM trnsact
+WHERE saledate between '2004-08-01' AND '2004-08-10'
+ORDER BY orgprice desc, sprice desc;
+
+Which of the following brand names with the word/letters “liz” in them exist in the Dillard’s database? Select all that apply. Note that you will need more than a single correct selection to answer the question correctly.
+
+SELECT distinct(brand)
+FROM skuinfo
+WHERE brand like '%liz%';
+
+
+What is the lowest store number of all the stores in the STORE_MSA table that are in the city of “little rock”,”memphis”, or “tulsa”?
+
+SELECT store, city
+FROM store_msa
+WHERE city = 'little rock' OR city = 'memphis' OR city = 'tulsa'
+order by store asc;
+
+On what day was Dillard’s income based on total sum of purchases the greatest
+
+SELECT TOP 10 sum(AMT), saledate
+FROM trnsact
+WHERE stype = ‘P’
+GROUP BY saledate 
+ORDER BY sum(AMT) desc;
+
+What is the deptdesc of the departments that have the top 3 greatest numbers of skus from the skuinfo table associated with them?
+
+SELECT s.dept, d.deptdesc, COUNT(s.sku)
+FROM skuinfo s
+JOIN deptinfo d ON s.dept = d.dept
+GROUP by s.dept, d.deptdesc
+ORDER BY COUNT(s.sku) desc;
+
+Which table contains the most distinct sku numbers?
+
+SELECT count(distinct)
+
+How many skus are in the skstinfo table, but NOT in the skuinfo table?
+
+SELECT count(distinct st.sku)
+FROM skstinfo st 
+LEFT JOIN skuinfo si ON st.sku = si.sku
+WHERE si.sku IS NULL;
+What is the average amount of profit Dillard’s made per day?
+
+SELECT SUM(amt-(cost*quantity))/COUNT(distinct saledate) AS avg_profit
+FROM trnsact t
+JOIN skstinfo si ON t.sku = si.sku AND t.store = si.store
+WHERE stype = ‘P’;
+
+The store_msa table provides population statistics about the geographic location around a store. Using one query to retrieve your answer, how many MSAs are there within the state of North Carolina (abbreviated “NC”), and within these MSAs, what is the lowest population level (msa_pop) and highest income level (msa_income)?
+
+SELECT store, state, msa_pop, msa_income
+FROM store_msa
+WHERE state = 'NC'
+ORDER BY msa_pop, msa_income;
+
+What department (with department description), brand, style, and color brought in the greatest total amount of sales?
+
+SELECT TOP 10 d.deptdesc, s.dept, s.brand, s.style, s.color, SUM(t.amt) AS sales
+FROM trnsact t, skuinfo s, deptinfo d
+WHERE stype = 'P' AND s.sku = t.sku AND d.dept = s.dept
+GROUP BY d.deptdesc, s.dept, s.brand, s.style, s.color
+ORDER BY sales desc;
+
+How many stores have more than 180,000 distinct skus associated with them in the skstinfo table?
+
+SELECT store, count(distinct sku)
+FROM skstinfo
+HAVING count(distinct sku) > 180000
+GROUP BY store;
+
+Look at the data from all the distinct skus in the “cop” department with a “federal” brand and a “rinse wash” color. You'll see that these skus have the same values in some of the columns, meaning that they have some features in common. In which columns do these skus have different values from one another, meaning that their features differ in the categories represented by the columns?
+SELECT distinct s.sku, s.dept, s.style, s.color, s.size, s.vendor, s.brand, s.packsize, d.deptdesc, st.retail, st.cost
+FROM skuinfo s
+JOIN deptinfo d ON s.dept = d.dept
+JOIN skstinfo st ON s.sku = st.sku
+WHERE d.deptdesc = 'cop' AND s.brand = 'federal' AND s.color = 'rinse wash';
+
+How many skus are in the skuinfo table, but NOT in the skstinfo table?
+In what city and state is the store that had the greatest total sum of sales?
+SELECT TOP 5 strinfo.store, city, state, sum(amt)
+FROM strinfo
+JOIN trnsact on trnsact.store = strinfo.store
+WHERE stype = 'P'
+GROUP BY strinfo.city, strinfo.store, strinfo.state
+ORDER BY sum(amt) desc;
+
+How many states have more than 10 stores in them?
+What is the suggested retail price of all the skus in the “reebok” department with the “skechers” brand and a “wht/saphire” color?
+
+SELECT TOP 10 s.retail, d.deptdesc, sk.brand, sk.color
+FROM skuinfo sk
+JOIN deptinfo d on d.dept = sk.dept
+JOIN skstinfo s on s.sku = sk.sku
+WHERE d.deptdesc = 'reebok' AND sk.brand = 'skechers' AND sk.color = 'wht/saphire';
